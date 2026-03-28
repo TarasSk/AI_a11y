@@ -1,6 +1,8 @@
+import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:flutter_gemma/flutter_gemma.dart';
+import 'package:path_provider/path_provider.dart';
 
 final class GemmaService {
   GemmaService({required String token}) : _token = token;
@@ -13,38 +15,59 @@ final class GemmaService {
   static const modelUrl =
       'https://huggingface.co/google/gemma-3n-E2B-it-litert-lm/resolve/main/gemma-3n-E2B-it-int4.litertlm';
 
-  static const _modelFilename = 'gemma-3n-E2B-it-int4.litertlm';
+  static const modelUrl1 =
+      'https://huggingface.co/google/gemma-3n-E2B-it-litert/resolve/main/gemma-3n-E2B-it-int4.task';
 
-  Future<bool> isModelInstalled() =>
-      FlutterGemma.isModelInstalled(_modelFilename);
+  static const _modelFilename = 'gemma-3n-E2B-it-int4.task';
+
+  /// Returns the path to the model file in the public Downloads directory.
+  static Future<String> get modelPath async {
+    final externalDir = await getExternalStorageDirectory();
+    if (externalDir != null) {
+      // getExternalStorageDirectory() returns the app-specific dir:
+      // /storage/emulated/0/Android/data/<pkg>/files
+      // Navigate 4 levels up to reach the storage root.
+      final root = externalDir.parent.parent.parent.parent;
+      return '${root.path}/Download/$_modelFilename';
+    }
+    return '/storage/emulated/0/Download/$_modelFilename';
+  }
+
+  Future<bool> isModelInstalled() async {
+    final path = await modelPath;
+    return File(path).exists();
+  }
 
   Future<void> installModel({void Function(int progress)? onProgress}) async {
-    await FlutterGemma.installModel(modelType: ModelType.gemmaIt)
-        .fromNetwork(modelUrl, token: _token)
-        .withProgress((p) => onProgress?.call(p))
-        .install();
+    await FlutterGemma.installModel(
+      modelType: ModelType.gemmaIt,
+    ).fromNetwork(modelUrl, token: _token).install();
+    // final path = await modelPath;
+    // await FlutterGemma.installModel(
+    //   modelType: ModelType.gemmaIt,
+    // ).fromFile(path).withProgress((p) => onProgress?.call(p)).install();
   }
 
   Future<void> initSession({int maxTokens = 1024}) async {
     // Always call install() to register the active model spec in this session.
     // getActiveModel() requires setActiveModel() to have been called first,
-    // which happens inside install(). install() is idempotent — it skips the
-    // network download if the file is already on disk.
-    await FlutterGemma.installModel(modelType: ModelType.gemmaIt)
-        .fromNetwork(modelUrl, token: _token)
-        .install();
+    // which happens inside install().
+    // final path = await modelPath;
+    // await FlutterGemma.installModel(modelType: ModelType.gemmaIt)
+    //     .fromFile(path)
+    //     .install();
     _model = await FlutterGemma.getActiveModel(
       maxTokens: maxTokens,
       preferredBackend: PreferredBackend.gpu,
-      supportImage: true,
-      maxNumImages: 1,
     );
-    _chat = await _model!.createChat(supportImage: true);
+    _chat = await _model!.createChat();
   }
 
   Future<String> sendMessage(String text, {Uint8List? imageBytes}) async {
     if (_model == null || _chat == null) {
-      throw StateError('GemmaService session is not initialized. Call initSession() first.');
+      throw StateError(
+        'GemmaService session is not initialized. Call initSession() first.',
+      );
     }
     // Always start a fresh chat for image messages so accumulated context
     // and stale session state don't cause native inference crashes.

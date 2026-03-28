@@ -3,7 +3,8 @@
     "allow": [
       "Bash(fvm flutter:*)",
       "Bash(xargs cat:*)",
-      "Bash(chmod:*)"
+      "Bash(chmod:*)",
+      "Bash(flutter pub:*)"
     ]
   }
 }

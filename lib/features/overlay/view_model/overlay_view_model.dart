@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:ai_a11y/app/localization/l10n/app_localizations.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:ai_a11y/domain/entity/process_screenshot_result.dart';
 import 'package:ai_a11y/domain/use_case/process_screenshot_use_case.dart';
 import 'package:ai_a11y/features/overlay/state/overlay_state.dart';
@@ -102,37 +103,67 @@ final class OverlayViewModel extends Cubit<OverlayState> {
 
   Future<void> initModel() async {
     if (isClosed) return;
-    emit(state.copyWith(modelStatus: GemmaModelStatus.initializing, error: null));
+    emit(
+      state.copyWith(modelStatus: GemmaModelStatus.initializing, error: null),
+    );
     try {
-      final installed = await _gemmaService.isModelInstalled();
-      if (!installed) {
-        emit(state.copyWith(modelStatus: GemmaModelStatus.downloading));
-        await _gemmaService.installModel(
-          onProgress: (p) {
-            if (!isClosed) emit(state.copyWith(downloadProgress: p));
-          },
-        );
-        if (isClosed) return;
-        emit(state.copyWith(
+      if (!await Permission.manageExternalStorage.isGranted) {
+        final status = await Permission.manageExternalStorage.request();
+        if (!status.isGranted) {
+          if (isClosed) return;
+          emit(
+            state.copyWith(
+              modelStatus: GemmaModelStatus.error,
+              error: 'Storage permission is required to load the model.',
+            ),
+          );
+          return;
+        }
+      }
+      // final installed = await _gemmaService.isModelInstalled();
+      // if (!installed) {
+      emit(state.copyWith(modelStatus: GemmaModelStatus.downloading));
+      await _gemmaService.installModel(
+        onProgress: (p) {
+          if (!isClosed) emit(state.copyWith(downloadProgress: p));
+        },
+      );
+      if (isClosed) return;
+      emit(
+        state.copyWith(
           modelStatus: GemmaModelStatus.installed,
           downloadProgress: 100,
-        ));
-      }
+        ),
+      );
+      // }
       await _gemmaService.initSession();
       if (isClosed) return;
       emit(state.copyWith(modelStatus: GemmaModelStatus.ready));
     } catch (e) {
       if (isClosed) return;
-      emit(state.copyWith(modelStatus: GemmaModelStatus.error, error: e.toString()));
+      emit(
+        state.copyWith(
+          modelStatus: GemmaModelStatus.error,
+          error: e.toString(),
+        ),
+      );
     }
   }
 
   Future<void> _handleScreenshotCaptured(String screenshotPath) async {
     if (isClosed) return;
     if (state.modelStatus != GemmaModelStatus.ready) return;
-    emit(state.copyWith(isGenerating: true, lastScreenshotPath: screenshotPath, error: null));
+    emit(
+      state.copyWith(
+        isGenerating: true,
+        lastScreenshotPath: screenshotPath,
+        error: null,
+      ),
+    );
     try {
-      final result = await _processScreenshotUseCase.processScreenshot(screenshotPath);
+      final result = await _processScreenshotUseCase.processScreenshot(
+        screenshotPath,
+      );
       if (isClosed) return;
       switch (result) {
         case ProcessScreenshotSuccess(:final description):

@@ -12,7 +12,6 @@ import android.os.Looper
 import android.provider.MediaStore
 import android.view.Display
 import android.view.accessibility.AccessibilityEvent
-import android.widget.Toast
 import androidx.annotation.RequiresApi
 import java.io.File
 import java.io.FileOutputStream
@@ -73,16 +72,10 @@ class ScreenCaptureAccessibilityService : AccessibilityService() {
                             if (cachePath != null) {
                                 MainActivity.notifyScreenshotCaptured(cachePath)
                             }
-                            if (uri != null) {
-                                toast("Screenshot saved to Pictures/AI_A11Y")
-                            } else {
-                                toast("Failed to save screenshot.")
-                            }
                             onDone()
                         }
                     } else {
                         Handler(Looper.getMainLooper()).post {
-                            toast("Screenshot failed: empty image")
                             onDone()
                         }
                     }
@@ -90,7 +83,6 @@ class ScreenCaptureAccessibilityService : AccessibilityService() {
 
                 override fun onFailure(errorCode: Int) {
                     Handler(Looper.getMainLooper()).post {
-                        toast("Screenshot failed (code $errorCode)")
                         onDone()
                     }
                 }
@@ -139,8 +131,4 @@ class ScreenCaptureAccessibilityService : AccessibilityService() {
         }
     }
 
-    // ─── Helpers ──────────────────────────────────────────────────
-
-    private fun toast(msg: String) =
-        Toast.makeText(this, msg, Toast.LENGTH_SHORT).show()
 }

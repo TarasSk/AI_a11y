@@ -9,6 +9,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
 import 'package:ai_a11y/features/overlay/state/overlay_state.dart';
 import 'package:ai_a11y/features/overlay/view_model/overlay_view_model.dart';
+import 'package:ai_a11y/domain/use_case/process_screenshot_use_case.dart';
 import 'package:ai_a11y/services/native_overlay_service.dart';
 
 final class OverlayPage extends StatelessWidget {
@@ -22,6 +23,7 @@ final class OverlayPage extends StatelessWidget {
       create: (_) => OverlayViewModel(
         overlayService: GetIt.instance<NativeOverlayService>(),
         localization: locale,
+        processScreenshotUseCase: GetIt.instance<ProcessScreenshotUseCase>(),
       )..checkPermissions(),
       child: BlocBuilder<OverlayViewModel, OverlayState>(
         builder: (context, state) {

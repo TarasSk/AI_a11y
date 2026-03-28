@@ -1,3 +1,4 @@
+import 'package:ai_a11y/data/services/gemma_service.dart';
 import 'package:ai_a11y/data/services/tts_service.dart';
 import 'package:ai_a11y/data/services/ui_detection_service.dart';
 import 'package:ai_a11y/domain/entity/gemini_result.dart';
@@ -17,6 +18,7 @@ final class ProcessScreenshotUseCase {
     required TtsService ttsService,
     required UiDetectionService uiDetectionService,
     required IGeminiRepository geminiRepository,
+    required GemmaService gemmaService,
   }) : _ttsService = ttsService,
        _uiDetectionService = uiDetectionService,
        _geminiRepository = geminiRepository;

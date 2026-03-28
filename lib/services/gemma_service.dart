@@ -39,28 +39,20 @@ final class GemmaService {
   }
 
   Future<void> installModel({void Function(int progress)? onProgress}) async {
-    await FlutterGemma.installModel(
-      modelType: ModelType.gemmaIt,
-    ).fromNetwork(modelUrl, token: _token).install();
-    // final path = await modelPath;
-    // await FlutterGemma.installModel(
-    //   modelType: ModelType.gemmaIt,
-    // ).fromFile(path).withProgress((p) => onProgress?.call(p)).install();
+    await FlutterGemma.installModel(modelType: ModelType.gemmaIt)
+        .fromNetwork(modelUrl1, token: _token)
+        .withProgress((p) => onProgress?.call(p))
+        .install();
   }
 
   Future<void> initSession({int maxTokens = 1024}) async {
-    // Always call install() to register the active model spec in this session.
-    // getActiveModel() requires setActiveModel() to have been called first,
-    // which happens inside install().
-    // final path = await modelPath;
-    // await FlutterGemma.installModel(modelType: ModelType.gemmaIt)
-    //     .fromFile(path)
-    //     .install();
     _model = await FlutterGemma.getActiveModel(
       maxTokens: maxTokens,
       preferredBackend: PreferredBackend.gpu,
+      supportImage: true,
+      maxNumImages: 1,
     );
-    _chat = await _model!.createChat();
+    _chat = await _model!.createChat(supportImage: true);
   }
 
   Future<String> sendMessage(String text, {Uint8List? imageBytes}) async {

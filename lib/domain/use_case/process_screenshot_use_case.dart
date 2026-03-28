@@ -61,14 +61,14 @@ final class ProcessScreenshotUseCase {
     return _gemmaService.sendMessage(prompt, imageBytes: compressed);
   }
 
-  /// Decodes the screenshot, resizes to max 512 px on the longest side, and
+  /// Decodes the screenshot, resizes to max 128 px on the longest side, and
   /// re-encodes as JPEG (quality 85) to reduce GPU memory pressure.
   static Uint8List _compressToJpeg(Uint8List raw) {
     final decoded = img.decodeImage(raw);
     if (decoded == null) return raw;
     final resized = decoded.width > decoded.height
-        ? img.copyResize(decoded, width: 512)
-        : img.copyResize(decoded, height: 512);
+        ? img.copyResize(decoded, width: 128)
+        : img.copyResize(decoded, height: 128);
     return Uint8List.fromList(img.encodeJpg(resized, quality: 85));
   }
 }

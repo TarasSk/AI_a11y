@@ -101,10 +101,10 @@ final class OverlayViewModel extends Cubit<OverlayState> {
 
   Future<void> _handleScreenshotCaptured(String screenshotPath) async {
     try {
-      final prediction = await _uiDetectionService.predictFromScreenshotFile(
+      final predictionResult = await _uiDetectionService.predictFromScreenshotFile(
         screenshotPath,
       );
-      debugPrint('TFLite prediction: $prediction');
+      debugPrint('TFLite prediction:\n${predictionResult.toLogString()}');
       if (!isClosed) {
         emit(state.copyWith(lastScreenshotPath: screenshotPath, error: null));
       }

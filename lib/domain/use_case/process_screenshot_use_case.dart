@@ -36,8 +36,6 @@ final class ProcessScreenshotUseCase {
 
     final description = await _buildDescription(screenshotPath);
 
-    await _ttsService.speak(description);
-
     return ProcessScreenshotResult.success(description: description);
   }
 
@@ -52,14 +50,15 @@ final class ProcessScreenshotUseCase {
       systemPrompt: _systemPrompt,
     );
 
-    return geminiResult.when(
-      success: (description) => description,
-      failure: (_) => tfliteResult, // fall back to raw TFLite output on error
-    );
+    final description = switch (geminiResult) {
+      GeminiResultSuccess(:final description) => description,
+      GeminiResultFailure() => tfliteResult,
+    };
+
+    await _ttsService.speak(description);
+    return description;
   }
 }
 
 const _systemPrompt =
     'You are a real-time voice accessibility assistant for mobile interfaces. You receive a screenshot and raw UI detections. Your job is to understand the screen and generate one short spoken message that helps a blind or low-vision user use the app. Use the screenshot as the primary source. Use the detection output only as supporting evidence. Detection output may be noisy or incomplete. Your spoken response must: - describe the screen purpose - mention the most important visible content - name the main available actions - suggest the next useful step Your response must NOT: - include coordinates - include confidence scores - list every element - mention technical model details - invent text or controls not supported by the image Preferred style: - natural spoken English - calm and concise - 2 to 5 short sentences - under 100 words in most cases If the exact screen is unclear, briefly say what it appears to be. If a primary action is visible, mention it. If a popup or alert is visible, describe it first. If the screen is scrollable, mention that. Return only the final TTS-ready narration.';
-
-

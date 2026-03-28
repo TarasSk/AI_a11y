@@ -75,12 +75,14 @@ final class UiDetectionService {
 
   Interpreter? _interpreter;
 
-  Future<String> predictFromScreenshotFile(String screenshotPath) async {
+  Future<UiDetectionResult> predictFromScreenshotFile(
+    String screenshotPath,
+  ) async {
     final screenshotBytes = await File(screenshotPath).readAsBytes();
     return predictFromScreenshot(screenshotBytes);
   }
 
-  Future<String> predictFromScreenshot(Uint8List screenshotBytes) async {
+  Future<UiDetectionResult> predictFromScreenshot(Uint8List screenshotBytes) async {
     final interpreter = await _loadInterpreter();
     final decodedImage = img.decodeImage(screenshotBytes);
     if (decodedImage == null) {
@@ -89,18 +91,21 @@ final class UiDetectionService {
 
     final inputTensor = interpreter.getInputTensor(0);
     final inputShape = inputTensor.shape;
-    final inputType = inputTensor.type;
-    debugPrint('TFLite input tensor shape: $inputShape, type: $inputType');
+    debugPrint(
+      'TFLite input tensor shape: $inputShape, type: ${inputTensor.type}',
+    );
 
     final preprocessedInput = _preprocessImage(
       image: decodedImage,
       inputShape: inputShape,
     );
+
     final outputTensor = interpreter.getOutputTensor(0);
     final outputShape = outputTensor.shape;
     debugPrint(
       'TFLite output tensor shape: $outputShape, type: ${outputTensor.type}',
     );
+
     final outputBuffer = Float32List(_elementCount(outputShape));
     final outputBytes = Uint8List.view(outputBuffer.buffer);
 
@@ -113,12 +118,13 @@ final class UiDetectionService {
       imageHeight: decodedImage.height.toDouble(),
     );
 
-    if (detections.isEmpty) {
-      return 'No UI elements detected.';
-    }
-
-    final summary = _summarizeDetections(detections);
-    return summary.join(', ');
+    return UiDetectionResult(
+      inputShape: inputShape,
+      outputShape: outputShape,
+      imageWidth: decodedImage.width,
+      imageHeight: decodedImage.height,
+      detections: detections,
+    );
   }
 
   Future<void> dispose() async {
@@ -178,7 +184,8 @@ final class UiDetectionService {
 
         if (isChannelFirst) {
           inputBuffer[pixelIndex] = pixel.r / 255.0;
-          inputBuffer[inputWidth * inputHeight + pixelIndex] = pixel.g / 255.0;
+          inputBuffer[inputWidth * inputHeight + pixelIndex] =
+              pixel.g / 255.0;
           inputBuffer[2 * inputWidth * inputHeight + pixelIndex] =
               pixel.b / 255.0;
         } else {
@@ -193,7 +200,7 @@ final class UiDetectionService {
     return inputBuffer;
   }
 
-  List<_Detection> _parseDetections({
+  List<UiDetection> _parseDetections({
     required Float32List outputBuffer,
     required List<int> outputShape,
     required double imageWidth,
@@ -205,23 +212,18 @@ final class UiDetectionService {
 
     final dimensionA = outputShape[1];
     final dimensionB = outputShape[2];
-
     final isChannelFirstLayout = dimensionA == _labels.length + 4;
     final candidateCount = isChannelFirstLayout ? dimensionB : dimensionA;
     final valuesPerCandidate = isChannelFirstLayout ? dimensionA : dimensionB;
 
     if (valuesPerCandidate < _labels.length + 4) {
       throw StateError(
-        'Model output does not contain enough values for $_labels.length classes.',
+        'Model output does not contain enough values for ${_labels.length} classes.',
       );
     }
 
-    final detections = <_Detection>[];
-    for (
-      var candidateIndex = 0;
-      candidateIndex < candidateCount;
-      candidateIndex++
-    ) {
+    final detections = <UiDetection>[];
+    for (var candidateIndex = 0; candidateIndex < candidateCount; candidateIndex++) {
       final values = _readCandidateValues(
         outputBuffer: outputBuffer,
         isChannelFirstLayout: isChannelFirstLayout,
@@ -249,10 +251,13 @@ final class UiDetectionService {
       }
 
       detections.add(
-        _Detection(
+        UiDetection(
           label: _labels[maxClass.index],
           confidence: maxClass.score,
-          rect: rect,
+          left: rect.left,
+          top: rect.top,
+          right: rect.right,
+          bottom: rect.bottom,
         ),
       );
     }
@@ -281,11 +286,7 @@ final class UiDetectionService {
     var bestClassIndex = 0;
     var bestScore = values[startIndex];
 
-    for (
-      var valueIndex = startIndex + 1;
-      valueIndex < values.length;
-      valueIndex++
-    ) {
+    for (var valueIndex = startIndex + 1; valueIndex < values.length; valueIndex++) {
       if (values[valueIndex] > bestScore) {
         bestScore = values[valueIndex];
         bestClassIndex = valueIndex - startIndex;
@@ -320,11 +321,11 @@ final class UiDetectionService {
     );
   }
 
-  List<_Detection> _applyNonMaximumSuppression(List<_Detection> detections) {
+  List<UiDetection> _applyNonMaximumSuppression(List<UiDetection> detections) {
     final sortedDetections = detections.toList()
       ..sort((left, right) => right.confidence.compareTo(left.confidence));
 
-    final keptDetections = <_Detection>[];
+    final keptDetections = <UiDetection>[];
     for (final detection in sortedDetections) {
       final overlapsExisting = keptDetections.any(
         (kept) =>
@@ -362,7 +363,34 @@ final class UiDetectionService {
     return intersectionArea / unionArea;
   }
 
-  List<String> _summarizeDetections(List<_Detection> detections) {
+  int _elementCount(List<int> shape) {
+    return shape.fold(1, (result, value) => result * value);
+  }
+}
+
+@immutable
+final class UiDetectionResult {
+  const UiDetectionResult({
+    required this.inputShape,
+    required this.outputShape,
+    required this.imageWidth,
+    required this.imageHeight,
+    required this.detections,
+  });
+
+  final List<int> inputShape;
+  final List<int> outputShape;
+  final int imageWidth;
+  final int imageHeight;
+  final List<UiDetection> detections;
+
+  bool get hasDetections => detections.isNotEmpty;
+
+  String get summaryText {
+    if (detections.isEmpty) {
+      return 'No UI elements detected.';
+    }
+
     final counts = <String, int>{};
     final topConfidence = <String, double>{};
 
@@ -386,25 +414,62 @@ final class UiDetectionService {
       final count = counts[label] ?? 0;
       final confidence = ((topConfidence[label] ?? 0) * 100).toStringAsFixed(1);
       return '$label x$count ($confidence%)';
-    }).toList();
+    }).join(', ');
   }
 
-  int _elementCount(List<int> shape) {
-    return shape.fold(1, (result, value) => result * value);
+  String toLogString() {
+    final buffer = StringBuffer()
+      ..writeln(
+        'UiDetectionResult(inputShape: $inputShape, outputShape: $outputShape, imageSize: ${imageWidth}x$imageHeight)',
+      );
+
+    if (detections.isEmpty) {
+      buffer.write('No UI elements detected.');
+      return buffer.toString();
+    }
+
+    for (var index = 0; index < detections.length; index++) {
+      final detection = detections[index];
+      buffer.writeln(
+        '#$index ${detection.label} '
+        'confidence=${(detection.confidence * 100).toStringAsFixed(2)}% '
+        'bbox=(${detection.left.toStringAsFixed(1)}, ${detection.top.toStringAsFixed(1)}, '
+        '${detection.right.toStringAsFixed(1)}, ${detection.bottom.toStringAsFixed(1)}) '
+        'size=${detection.width.toStringAsFixed(1)}x${detection.height.toStringAsFixed(1)}',
+      );
+    }
+
+    return buffer.toString().trimRight();
   }
 }
 
 @immutable
-final class _Detection {
-  const _Detection({
+final class UiDetection {
+  const UiDetection({
     required this.label,
     required this.confidence,
-    required this.rect,
+    required this.left,
+    required this.top,
+    required this.right,
+    required this.bottom,
   });
 
   final String label;
   final double confidence;
-  final _Rect rect;
+  final double left;
+  final double top;
+  final double right;
+  final double bottom;
+
+  _Rect get rect => _Rect(
+    left: left,
+    top: top,
+    right: right,
+    bottom: bottom,
+  );
+
+  double get width => right - left;
+  double get height => bottom - top;
 }
 
 @immutable

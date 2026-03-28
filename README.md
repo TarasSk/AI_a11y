@@ -16,7 +16,9 @@ Instead of depending on developer-provided accessibility semantics (which are of
 
 ![Initial setup preview](preview/initial_setup.gif)
 
-- Full video: [preview/initial_setup.mp4](preview/initial_setup.mp4)
+- How it works examples:
+  [Calculator example](preview/calculator_example.mp4)
+  [Email example](preview/email_example.mp4)
 
 ---
 

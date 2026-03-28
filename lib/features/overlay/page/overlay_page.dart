@@ -1,4 +1,5 @@
 import 'package:ai_a11y/app/localization/context_extension.dart';
+import 'package:ai_a11y/domain/use_case/process_screenshot_use_case.dart';
 import 'package:ai_a11y/features/overlay/widgets/overlay_action_button_widget.dart';
 import 'package:ai_a11y/features/overlay/widgets/overlay_error_widget.dart';
 import 'package:ai_a11y/features/overlay/widgets/overlay_status_text_widget.dart';
@@ -10,7 +11,6 @@ import 'package:get_it/get_it.dart';
 import 'package:ai_a11y/features/overlay/state/overlay_state.dart';
 import 'package:ai_a11y/features/overlay/view_model/overlay_view_model.dart';
 import 'package:ai_a11y/services/native_overlay_service.dart';
-import 'package:ai_a11y/services/ui_detection_service.dart';
 
 final class OverlayPage extends StatelessWidget {
   const OverlayPage({super.key});
@@ -22,7 +22,7 @@ final class OverlayPage extends StatelessWidget {
     return BlocProvider(
       create: (_) => OverlayViewModel(
         overlayService: GetIt.instance<NativeOverlayService>(),
-        uiDetectionService: GetIt.instance<UiDetectionService>(),
+        processScreenshotUseCase: GetIt.instance<ProcessScreenshotUseCase>(),
         localization: locale,
       )..checkPermissions(),
       child: BlocBuilder<OverlayViewModel, OverlayState>(

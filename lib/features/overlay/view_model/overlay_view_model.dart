@@ -1,24 +1,25 @@
 import 'package:ai_a11y/app/localization/l10n/app_localizations.dart';
+import 'package:ai_a11y/domain/entity/process_screenshot_result.dart';
+import 'package:ai_a11y/domain/use_case/process_screenshot_use_case.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ai_a11y/features/overlay/state/overlay_state.dart';
 import 'package:ai_a11y/services/native_overlay_service.dart';
-import 'package:ai_a11y/services/ui_detection_service.dart';
 
 final class OverlayViewModel extends Cubit<OverlayState> {
   OverlayViewModel({
     required NativeOverlayService overlayService,
-    required UiDetectionService uiDetectionService,
+    required ProcessScreenshotUseCase processScreenshotUseCase,
     required AppLocalizations localization,
   }) : _overlayService = overlayService,
-       _uiDetectionService = uiDetectionService,
+       _processScreenshotUseCase = processScreenshotUseCase,
        _localization = localization,
        super(const OverlayState()) {
     _overlayService.setOnScreenshotCaptured(_handleScreenshotCaptured);
   }
 
   final NativeOverlayService _overlayService;
-  final UiDetectionService _uiDetectionService;
+  final ProcessScreenshotUseCase _processScreenshotUseCase;
   final AppLocalizations _localization;
 
   Future<void> toggleOverlay() async {
@@ -100,16 +101,25 @@ final class OverlayViewModel extends Cubit<OverlayState> {
   }
 
   Future<void> _handleScreenshotCaptured(String screenshotPath) async {
+    if (isClosed) return;
+    emit(state.copyWith(lastScreenshotPath: screenshotPath, error: null));
+
     try {
-      final predictionResult = await _uiDetectionService.predictFromScreenshotFile(
+      final result = await _processScreenshotUseCase.processScreenshot(
         screenshotPath,
       );
-      debugPrint('TFLite prediction:\n${predictionResult.toLogString()}');
-      if (!isClosed) {
-        emit(state.copyWith(lastScreenshotPath: screenshotPath, error: null));
+
+      if (isClosed) return;
+
+      switch (result) {
+        case ProcessScreenshotSuccess():
+          debugPrint('Description: ${result.description}');
+        case ProcessScreenshotFailure():
+          debugPrint('ProcessScreenshot failed: ${result.error}');
+          emit(state.copyWith(error: result.error));
       }
     } catch (error, stackTrace) {
-      debugPrint('TFLite prediction failed: $error');
+      debugPrint('ProcessScreenshot unexpected error: $error');
       debugPrintStack(stackTrace: stackTrace);
       if (!isClosed) {
         emit(state.copyWith(error: error.toString()));

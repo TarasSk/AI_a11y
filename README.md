@@ -1,4 +1,4 @@
-# 📱 AI Screen Narrator (ai_a11y)
+# 📱 Hybrid AI Accessibility Layer for Mobile Apps (ai_a11y)
 
 An AI-powered mobile assistant that understands any app interface and provides real-time audio descriptions of on-screen elements — without relying on built-in accessibility APIs.
 
@@ -9,6 +9,12 @@ An AI-powered mobile assistant that understands any app interface and provides r
 AI Screen Narrator is designed to make mobile applications more accessible by analyzing the visual UI directly from the screen and converting it into meaningful, spoken feedback.
 
 Instead of depending on developer-provided accessibility semantics (which are often missing or incomplete), the app uses computer vision and on-device AI to interpret the interface like a human would.
+
+---
+
+## 🎬 Preview
+
+- Initial setup video: [preview/initial_setup.mp4](preview/initial_setup.mp4)
 
 ---
 

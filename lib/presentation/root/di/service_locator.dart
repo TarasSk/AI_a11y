@@ -1,3 +1,4 @@
+import 'package:ai_a11y/data/services/gemma_service.dart';
 import 'package:ai_a11y/data/services/native_overlay_service.dart';
 import 'package:ai_a11y/data/services/tts_service.dart';
 import 'package:ai_a11y/data/services/ui_detection_service.dart';
@@ -25,6 +26,7 @@ void setupServiceLocator() {
       ttsService: getIt<TtsService>(),
       uiDetectionService: getIt<UiDetectionService>(),
       geminiRepository: getIt<IGeminiRepository>(),
+      gemmaService: getIt<GemmaService>(),
     ),
   );
 }

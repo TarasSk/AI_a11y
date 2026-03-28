@@ -14,6 +14,8 @@ import android.view.Display
 import android.view.accessibility.AccessibilityEvent
 import android.widget.Toast
 import androidx.annotation.RequiresApi
+import java.io.File
+import java.io.FileOutputStream
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -65,10 +67,17 @@ class ScreenCaptureAccessibilityService : AccessibilityService() {
 
                     if (bitmap != null) {
                         val uri = saveBitmapToMediaStore(bitmap)
+                        val cachePath = saveBitmapToCache(bitmap)
                         bitmap.recycle()
                         Handler(Looper.getMainLooper()).post {
-                            if (uri != null) openScreenshot(uri)
-                            else toast("Screenshot saved to Pictures/AI_A11Y")
+                            if (cachePath != null) {
+                                MainActivity.notifyScreenshotCaptured(cachePath)
+                            }
+                            if (uri != null) {
+                                toast("Screenshot saved to Pictures/AI_A11Y")
+                            } else {
+                                toast("Failed to save screenshot.")
+                            }
                             onDone()
                         }
                     } else {
@@ -117,17 +126,16 @@ class ScreenCaptureAccessibilityService : AccessibilityService() {
         }
     }
 
-    // ─── Open image viewer ────────────────────────────────────────
-
-    private fun openScreenshot(uri: Uri) {
-        val intent = Intent(Intent.ACTION_VIEW).apply {
-            setDataAndType(uri, "image/png")
-            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-        }
-        try {
-            startActivity(intent)
-        } catch (_: Exception) {
-            toast("Screenshot saved to Pictures/AI_A11Y")
+    private fun saveBitmapToCache(bitmap: Bitmap): String? {
+        val file = File(cacheDir, "latest_screenshot.png")
+        return try {
+            FileOutputStream(file).use { stream ->
+                bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream)
+            }
+            file.absolutePath
+        } catch (e: Exception) {
+            e.printStackTrace()
+            null
         }
     }
 
@@ -136,4 +144,3 @@ class ScreenCaptureAccessibilityService : AccessibilityService() {
     private fun toast(msg: String) =
         Toast.makeText(this, msg, Toast.LENGTH_SHORT).show()
 }
-

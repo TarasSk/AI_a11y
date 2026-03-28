@@ -9,8 +9,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
 import 'package:ai_a11y/features/overlay/state/overlay_state.dart';
 import 'package:ai_a11y/features/overlay/view_model/overlay_view_model.dart';
-import 'package:ai_a11y/domain/use_case/process_screenshot_use_case.dart';
 import 'package:ai_a11y/services/native_overlay_service.dart';
+import 'package:ai_a11y/services/ui_detection_service.dart';
 
 final class OverlayPage extends StatelessWidget {
   const OverlayPage({super.key});
@@ -22,8 +22,8 @@ final class OverlayPage extends StatelessWidget {
     return BlocProvider(
       create: (_) => OverlayViewModel(
         overlayService: GetIt.instance<NativeOverlayService>(),
+        uiDetectionService: GetIt.instance<UiDetectionService>(),
         localization: locale,
-        processScreenshotUseCase: GetIt.instance<ProcessScreenshotUseCase>(),
       )..checkPermissions(),
       child: BlocBuilder<OverlayViewModel, OverlayState>(
         builder: (context, state) {
@@ -61,8 +61,8 @@ final class OverlayPage extends StatelessWidget {
                       label: state.isLoading
                           ? locale.overlay_button_loading
                           : state.isOverlayActive
-                              ? locale.overlay_button_stop
-                              : locale.overlay_button_start,
+                          ? locale.overlay_button_stop
+                          : locale.overlay_button_start,
                       onPressed: viewModel.toggleOverlay,
                     ),
                     if (state.error != null) ...[
@@ -89,7 +89,9 @@ final class OverlayPage extends StatelessWidget {
                         child: OutlinedButton.icon(
                           onPressed: viewModel.requestAccessibilityPermission,
                           icon: const Icon(Icons.accessibility_new_rounded),
-                          label: Text(locale.overlay_accessibility_enable_button),
+                          label: Text(
+                            locale.overlay_accessibility_enable_button,
+                          ),
                           style: OutlinedButton.styleFrom(
                             foregroundColor: Colors.white70,
                             side: const BorderSide(color: Colors.white24),

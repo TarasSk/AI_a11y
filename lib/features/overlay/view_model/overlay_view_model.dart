@@ -1,23 +1,25 @@
 import 'package:ai_a11y/app/localization/l10n/app_localizations.dart';
-import 'package:ai_a11y/domain/entity/process_screenshot_result.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ai_a11y/features/overlay/state/overlay_state.dart';
-import 'package:ai_a11y/domain/use_case/process_screenshot_use_case.dart';
 import 'package:ai_a11y/services/native_overlay_service.dart';
+import 'package:ai_a11y/services/ui_detection_service.dart';
 
 final class OverlayViewModel extends Cubit<OverlayState> {
   OverlayViewModel({
     required NativeOverlayService overlayService,
+    required UiDetectionService uiDetectionService,
     required AppLocalizations localization,
-    required ProcessScreenshotUseCase processScreenshotUseCase,
   }) : _overlayService = overlayService,
+       _uiDetectionService = uiDetectionService,
        _localization = localization,
-       _processScreenshotUseCase = processScreenshotUseCase,
-       super(const OverlayState());
+       super(const OverlayState()) {
+    _overlayService.setOnScreenshotCaptured(_handleScreenshotCaptured);
+  }
 
   final NativeOverlayService _overlayService;
+  final UiDetectionService _uiDetectionService;
   final AppLocalizations _localization;
-  final ProcessScreenshotUseCase _processScreenshotUseCase;
 
   Future<void> toggleOverlay() async {
     if (state.isOverlayActive) {
@@ -97,23 +99,27 @@ final class OverlayViewModel extends Cubit<OverlayState> {
     await checkPermissions();
   }
 
-  /// Processes a screenshot: runs the full pipeline (analyse → speak).
-  ///
-  /// [screenshotPath] is the local file path received from the native overlay.
-  /// Pass `null` to test the error-handling branch.
-  Future<void> processScreenshot() async {
-    if (isClosed) return;
-    emit(state.copyWith(isLoading: true, error: null));
-
-    final result = await _processScreenshotUseCase.processScreenshot();
-
-    if (isClosed) return;
-
-    switch (result) {
-      case ProcessScreenshotSuccess():
-        emit(state.copyWith(isLoading: false));
-      case ProcessScreenshotFailure(:final error):
-        emit(state.copyWith(isLoading: false, error: error));
+  Future<void> _handleScreenshotCaptured(String screenshotPath) async {
+    try {
+      final prediction = await _uiDetectionService.predictFromScreenshotFile(
+        screenshotPath,
+      );
+      debugPrint('TFLite prediction: $prediction');
+      if (!isClosed) {
+        emit(state.copyWith(lastScreenshotPath: screenshotPath, error: null));
+      }
+    } catch (error, stackTrace) {
+      debugPrint('TFLite prediction failed: $error');
+      debugPrintStack(stackTrace: stackTrace);
+      if (!isClosed) {
+        emit(state.copyWith(error: error.toString()));
+      }
     }
+  }
+
+  @override
+  Future<void> close() {
+    _overlayService.setOnScreenshotCaptured(null);
+    return super.close();
   }
 }

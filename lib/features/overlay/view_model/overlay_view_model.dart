@@ -1,23 +1,24 @@
 import 'package:ai_a11y/app/localization/l10n/app_localizations.dart';
+import 'package:ai_a11y/domain/entity/process_screenshot_result.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
 import 'package:ai_a11y/features/overlay/state/overlay_state.dart';
+import 'package:ai_a11y/domain/use_case/process_screenshot_use_case.dart';
 import 'package:ai_a11y/services/native_overlay_service.dart';
 
 final class OverlayViewModel extends Cubit<OverlayState> {
   OverlayViewModel({
     required NativeOverlayService overlayService,
     required AppLocalizations localization,
-  })  : _overlayService = overlayService,
-        _localization = localization,
-        super(const OverlayState());
+    required ProcessScreenshotUseCase processScreenshotUseCase,
+  }) : _overlayService = overlayService,
+       _localization = localization,
+       _processScreenshotUseCase = processScreenshotUseCase,
+       super(const OverlayState());
 
   final NativeOverlayService _overlayService;
   final AppLocalizations _localization;
+  final ProcessScreenshotUseCase _processScreenshotUseCase;
 
-  // ── Toggle overlay ─────────────────────────────────────────────
-
-  /// Toggles the overlay on/off.
   Future<void> toggleOverlay() async {
     if (state.isOverlayActive) {
       await stopOverlay();
@@ -37,10 +38,12 @@ final class OverlayViewModel extends Cubit<OverlayState> {
       if (isClosed) return;
 
       if (!hasOverlay) {
-        emit(state.copyWith(
-          isLoading: false,
-          error: _localization.overlay_error_permission_denied,
-        ));
+        emit(
+          state.copyWith(
+            isLoading: false,
+            error: _localization.overlay_error_permission_denied,
+          ),
+        );
         return;
       }
       emit(state.copyWith(hasOverlayPermission: true));
@@ -71,19 +74,19 @@ final class OverlayViewModel extends Cubit<OverlayState> {
     }
   }
 
-  // ── Permissions ────────────────────────────────────────────────
-
-  /// Checks both overlay and accessibility permission status.
   Future<void> checkPermissions() async {
     if (isClosed) return;
     try {
       final hasOverlay = await _overlayService.hasOverlayPermission();
-      final hasAccessibility = await _overlayService.hasAccessibilityPermission();
+      final hasAccessibility = await _overlayService
+          .hasAccessibilityPermission();
       if (isClosed) return;
-      emit(state.copyWith(
-        hasOverlayPermission: hasOverlay,
-        hasAccessibilityPermission: hasAccessibility,
-      ));
+      emit(
+        state.copyWith(
+          hasOverlayPermission: hasOverlay,
+          hasAccessibilityPermission: hasAccessibility,
+        ),
+      );
     } catch (_) {}
   }
 
@@ -92,5 +95,27 @@ final class OverlayViewModel extends Cubit<OverlayState> {
     await _overlayService.requestAccessibilityPermission();
     // Re-check after returning from settings.
     await checkPermissions();
+  }
+
+  /// Processes a screenshot: runs the full pipeline (analyse → speak).
+  ///
+  /// [screenshotPath] is the local file path received from the native overlay.
+  /// Pass `null` to test the error-handling branch.
+  Future<void> processScreenshot(String? screenshotPath) async {
+    if (isClosed) return;
+    emit(state.copyWith(isLoading: true, error: null));
+
+    final result = await _processScreenshotUseCase(screenshotPath);
+
+    if (isClosed) return;
+
+    switch (result) {
+      case ProcessScreenshotSuccess():
+        emit(
+          state.copyWith(isLoading: false, lastScreenshotPath: screenshotPath),
+        );
+      case ProcessScreenshotFailure(:final error):
+        emit(state.copyWith(isLoading: false, error: error));
+    }
   }
 }

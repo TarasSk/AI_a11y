@@ -1,32 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:flutter_gemma/flutter_gemma.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'presentation/root/app.dart';
+import 'presentation/root/di/service_locator.dart';
 
-import 'package:ai_a11y/app/app.dart';
-import 'package:ai_a11y/app/di/service_locator.dart';
-
-/// Returns the HuggingFace token.
-/// Priority: --dart-define (CI/prod) → .env asset (local dev).
-Future<String> _resolveToken() async {
-  const defined = String.fromEnvironment('HUGGINGFACE_TOKEN');
-  if (defined.isNotEmpty) return defined;
-
-  try {
-    final raw = await rootBundle.loadString('.env');
-    for (final line in raw.split('\n')) {
-      final trimmed = line.trim();
-      if (trimmed.startsWith('HUGGINGFACE_TOKEN=')) {
-        return trimmed.substring('HUGGINGFACE_TOKEN='.length).trim();
-      }
-    }
-  } catch (_) {}
-  return '';
-}
-
-void main() async {
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  final token = await _resolveToken();
+  await dotenv.load(fileName: '.env');
+  setupServiceLocator();
   await FlutterGemma.initialize(huggingFaceToken: token);
-  setupServiceLocator(hfToken: token);
   runApp(const App());
 }

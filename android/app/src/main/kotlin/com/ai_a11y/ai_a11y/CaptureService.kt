@@ -23,7 +23,6 @@ import android.os.Looper
 import android.provider.MediaStore
 import android.util.DisplayMetrics
 import android.view.WindowManager
-import android.widget.Toast
 import androidx.core.app.NotificationCompat
 import java.io.File
 import java.io.FileOutputStream
@@ -106,7 +105,6 @@ class CaptureService : Service() {
     private fun captureScreen() {
         val mediaProjection = OverlayService.instance?.mediaProjection
         if (mediaProjection == null) {
-            showToast("No active screen permission — tap the button again.")
             finish()
             return
         }
@@ -131,7 +129,6 @@ class CaptureService : Service() {
                 null, null
             ) ?: run {
                 imageReader.close()
-                showToast("Failed to start screen capture.")
                 finish()
                 return
             }
@@ -180,17 +177,11 @@ class CaptureService : Service() {
                         if (cachePath != null) {
                             MainActivity.notifyScreenshotCaptured(cachePath)
                         }
-                        if (uri != null) {
-                            showToast("Screenshot saved to Pictures/AI_A11Y")
-                        } else {
-                            showToast("Failed to save screenshot.")
-                        }
                         finish()
                     }
                 } catch (e: Exception) {
                     e.printStackTrace()
                     Handler(Looper.getMainLooper()).post {
-                        showToast("Screenshot failed: ${e.message}")
                         finish()
                     }
                 } finally {
@@ -202,7 +193,6 @@ class CaptureService : Service() {
 
         } catch (e: Exception) {
             e.printStackTrace()
-            showToast("Screenshot error: ${e.message}")
             finish()
         }
     }
@@ -248,11 +238,6 @@ class CaptureService : Service() {
             null
         }
     }
-
-    // ─── Helpers ──────────────────────────────────────────────────
-
-    private fun showToast(msg: String) =
-        Toast.makeText(this, msg, Toast.LENGTH_SHORT).show()
 
     private fun finish() {
         Handler(Looper.getMainLooper()).post {

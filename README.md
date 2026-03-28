@@ -14,7 +14,9 @@ Instead of depending on developer-provided accessibility semantics (which are of
 
 ## 🎬 Preview
 
-- Initial setup video: [preview/initial_setup.mp4](preview/initial_setup.mp4)
+![Initial setup preview](preview/initial_setup.gif)
+
+- Full video: [preview/initial_setup.mp4](preview/initial_setup.mp4)
 
 ---
 

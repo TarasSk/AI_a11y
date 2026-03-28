@@ -20,18 +20,22 @@ final class ProcessScreenshotUseCase {
   final TtsService _ttsService;
   final NativeOverlayService _overlayService;
 
-  Future<ProcessScreenshotResult> call(String? screenshotPath) async {
+  Future<ProcessScreenshotResult> processScreenshot() async {
+    // ── 1. Capture screenshot
+    final screenshotPath = await _overlayService.takeScreenshot();
+
     if (screenshotPath == null || screenshotPath.trim().isEmpty) {
       await _ttsService.speak(
         'Could not capture a screenshot. Please try again.',
       );
-      return const ProcessScreenshotResult.failure(error: 'Screenshot path is empty.');
+      return const ProcessScreenshotResult.failure(error: 'Screenshot capture failed.');
     }
 
-    // Process screenshot
-    // TODO: replace stub with real AI / OCR call via NativeOverlayService.
+    // ── 2. Process screenshot
+    // TODO: replace stub with real AI / OCR call.
     final description = await _buildDescription(screenshotPath);
 
+    // ── 3. Speak result
     await _ttsService.speak(description);
 
     return ProcessScreenshotResult.success(description: description);

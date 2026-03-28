@@ -31,6 +31,14 @@ final class NativeOverlayService {
     await _channel.invokeMethod('stopOverlay');
   }
 
+  // ── Screenshot ────────────────────────────────────────────────
+
+  /// Captures the current screen and returns the local file path.
+  /// Returns `null` if the capture failed or permission was denied.
+  Future<String?> takeScreenshot() async {
+    return _channel.invokeMethod<String>('takeScreenshot');
+  }
+
   // ── Accessibility permission ───────────────────────────────────
 
   /// Returns true if our AccessibilityService is enabled in system settings.

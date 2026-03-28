@@ -101,19 +101,17 @@ final class OverlayViewModel extends Cubit<OverlayState> {
   ///
   /// [screenshotPath] is the local file path received from the native overlay.
   /// Pass `null` to test the error-handling branch.
-  Future<void> processScreenshot(String? screenshotPath) async {
+  Future<void> processScreenshot() async {
     if (isClosed) return;
     emit(state.copyWith(isLoading: true, error: null));
 
-    final result = await _processScreenshotUseCase(screenshotPath);
+    final result = await _processScreenshotUseCase.processScreenshot();
 
     if (isClosed) return;
 
     switch (result) {
       case ProcessScreenshotSuccess():
-        emit(
-          state.copyWith(isLoading: false, lastScreenshotPath: screenshotPath),
-        );
+        emit(state.copyWith(isLoading: false));
       case ProcessScreenshotFailure(:final error):
         emit(state.copyWith(isLoading: false, error: error));
     }

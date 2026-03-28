@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(fvm flutter:*)",
+      "Bash(xargs cat:*)",
+      "Bash(chmod:*)"
+    ]
+  }
+}

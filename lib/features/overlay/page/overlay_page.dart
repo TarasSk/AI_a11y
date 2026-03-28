@@ -9,8 +9,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
 import 'package:ai_a11y/features/overlay/state/overlay_state.dart';
 import 'package:ai_a11y/features/overlay/view_model/overlay_view_model.dart';
+import 'package:ai_a11y/domain/use_case/process_screenshot_use_case.dart';
+import 'package:ai_a11y/services/gemma_service.dart';
 import 'package:ai_a11y/services/native_overlay_service.dart';
-import 'package:ai_a11y/services/ui_detection_service.dart';
 
 final class OverlayPage extends StatelessWidget {
   const OverlayPage({super.key});
@@ -20,11 +21,15 @@ final class OverlayPage extends StatelessWidget {
     final locale = context.localization;
 
     return BlocProvider(
-      create: (_) => OverlayViewModel(
-        overlayService: GetIt.instance<NativeOverlayService>(),
-        uiDetectionService: GetIt.instance<UiDetectionService>(),
-        localization: locale,
-      )..checkPermissions(),
+      create: (_) =>
+          OverlayViewModel(
+              overlayService: GetIt.instance<NativeOverlayService>(),
+              processScreenshotUseCase: GetIt.instance<ProcessScreenshotUseCase>(),
+              gemmaService: GetIt.instance<GemmaService>(),
+              localization: locale,
+            )
+            ..checkPermissions()
+            ..initModel(),
       child: BlocBuilder<OverlayViewModel, OverlayState>(
         builder: (context, state) {
           final viewModel = context.read<OverlayViewModel>();

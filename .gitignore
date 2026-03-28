@@ -50,3 +50,7 @@ app.*.map.json
 
 #VsCode
 .vscode/
+
+# Secrets
+.env
+config.json

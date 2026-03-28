@@ -1,10 +1,7 @@
 import 'package:flutter/material.dart';
 
 class OverlayErrorWidget extends StatelessWidget {
-  const OverlayErrorWidget({
-    super.key,
-    required this.message,
-  });
+  const OverlayErrorWidget({super.key, required this.message});
 
   final String message;
 
@@ -18,10 +15,7 @@ class OverlayErrorWidget extends StatelessWidget {
       ),
       child: Row(
         children: [
-          const Icon(
-            Icons.error_outline,
-            color: Colors.redAccent,
-          ),
+          const Icon(Icons.error_outline, color: Colors.redAccent),
           const SizedBox(width: 12),
           Expanded(
             child: Text(
@@ -34,4 +28,3 @@ class OverlayErrorWidget extends StatelessWidget {
     );
   }
 }
-

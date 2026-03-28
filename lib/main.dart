@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-
-import 'package:ai_a11y/app/app.dart';
-import 'package:ai_a11y/app/di/service_locator.dart';
+import 'presentation/root/app.dart';
+import 'presentation/root/di/service_locator.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();

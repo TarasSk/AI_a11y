@@ -56,4 +56,3 @@ final class GeminiRepository implements IGeminiRepository {
     }
   }
 }
-

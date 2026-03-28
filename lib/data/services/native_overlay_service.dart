@@ -12,7 +12,7 @@ final class NativeOverlayService {
 
   // ── Overlay permission ─────────────────────────────────────────
 
-  /// Checks if the app has overlay (draw over other apps) permission.
+  /// Checks if the root has overlay (draw over other apps) permission.
   Future<bool> hasOverlayPermission() async {
     final result = await _channel.invokeMethod<bool>('hasOverlayPermission');
     return result ?? false;

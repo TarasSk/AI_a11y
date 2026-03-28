@@ -1,12 +1,8 @@
+import 'package:ai_a11y/presentation/features/overlay/widgets/permission_indicator_widget.dart';
 import 'package:flutter/material.dart';
 
-import 'package:ai_a11y/features/overlay/widgets/permission_indicator_widget.dart';
-
 class PermissionsSectionWidget extends StatelessWidget {
-  const PermissionsSectionWidget({
-    super.key,
-    required this.permissions,
-  });
+  const PermissionsSectionWidget({super.key, required this.permissions});
 
   final List<({String label, bool granted})> permissions;
 
@@ -25,4 +21,3 @@ class PermissionsSectionWidget extends StatelessWidget {
     );
   }
 }
-

@@ -1,16 +1,16 @@
-import 'package:ai_a11y/app/localization/context_extension.dart';
+import 'package:ai_a11y/data/services/native_overlay_service.dart';
 import 'package:ai_a11y/domain/use_case/process_screenshot_use_case.dart';
-import 'package:ai_a11y/features/overlay/widgets/overlay_action_button_widget.dart';
-import 'package:ai_a11y/features/overlay/widgets/overlay_error_widget.dart';
-import 'package:ai_a11y/features/overlay/widgets/overlay_status_text_widget.dart';
-import 'package:ai_a11y/features/overlay/widgets/permissions_section_widget.dart';
-import 'package:ai_a11y/features/overlay/widgets/status_icon_widget.dart';
+import 'package:ai_a11y/presentation/features/overlay/state/overlay_state.dart';
+import 'package:ai_a11y/presentation/features/overlay/view_model/overlay_view_model.dart';
+import 'package:ai_a11y/presentation/features/overlay/widgets/overlay_action_button_widget.dart';
+import 'package:ai_a11y/presentation/features/overlay/widgets/overlay_error_widget.dart';
+import 'package:ai_a11y/presentation/features/overlay/widgets/overlay_status_text_widget.dart';
+import 'package:ai_a11y/presentation/features/overlay/widgets/permissions_section_widget.dart';
+import 'package:ai_a11y/presentation/features/overlay/widgets/status_icon_widget.dart';
+import 'package:ai_a11y/presentation/root/localization/context_extension.dart';
 import 'package:flutter/material.dart' hide OverlayState;
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
-import 'package:ai_a11y/features/overlay/state/overlay_state.dart';
-import 'package:ai_a11y/features/overlay/view_model/overlay_view_model.dart';
-import 'package:ai_a11y/services/native_overlay_service.dart';
 
 final class OverlayPage extends StatelessWidget {
   const OverlayPage({super.key});

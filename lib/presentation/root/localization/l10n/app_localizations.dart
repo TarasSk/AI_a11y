@@ -12,8 +12,8 @@ import 'app_localizations_en.dart';
 /// Callers can lookup localized strings with an instance of AppLocalizations
 /// returned by `AppLocalizations.of(context)`.
 ///
-/// Applications need to include `AppLocalizations.delegate()` in their app's
-/// `localizationDelegates` list, and the locales they support in the app's
+/// Applications need to include `AppLocalizations.delegate()` in their root's
+/// `localizationDelegates` list, and the locales they support in the root's
 /// `supportedLocales` list. For example:
 ///
 /// ```dart
@@ -45,7 +45,7 @@ import 'app_localizations_en.dart';
 ///
 /// iOS applications define key application metadata, including supported
 /// locales, in an Info.plist file that is built into the application bundle.
-/// To configure the locales supported by your app, you’ll need to edit this
+/// To configure the locales supported by your root, you’ll need to edit this
 /// file.
 ///
 /// First, open your project’s ios/Runner.xcworkspace Xcode workspace file.
@@ -212,7 +212,7 @@ AppLocalizations lookupAppLocalizations(Locale locale) {
   throw FlutterError(
     'AppLocalizations.delegate failed to load unsupported locale "$locale". This is likely '
     'an issue with the localizations generation tool. Please file an issue '
-    'on GitHub with a reproducible sample app and the gen-l10n configuration '
+    'on GitHub with a reproducible sample root and the gen-l10n configuration '
     'that was used.',
   );
 }

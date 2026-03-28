@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 
 class PermissionIndicator extends StatelessWidget {
-  const PermissionIndicator({super.key,
+  const PermissionIndicator({
+    super.key,
     required this.label,
     required this.granted,
   });
@@ -30,4 +31,3 @@ class PermissionIndicator extends StatelessWidget {
     );
   }
 }
-

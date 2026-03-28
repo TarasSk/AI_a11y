@@ -1,7 +1,7 @@
-import 'package:ai_a11y/app/localization/context_extension.dart';
+import 'package:ai_a11y/presentation/root/route/app_router.dart';
 import 'package:flutter/material.dart';
 
-import 'package:ai_a11y/app/route/app_router.dart';
+import 'localization/context_extension.dart';
 
 class App extends StatelessWidget {
   const App({super.key});
@@ -25,4 +25,3 @@ class App extends StatelessWidget {
     );
   }
 }
-

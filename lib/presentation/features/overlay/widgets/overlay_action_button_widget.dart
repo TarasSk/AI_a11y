@@ -30,19 +30,15 @@ class OverlayActionButtonWidget extends StatelessWidget {
                   color: Colors.white,
                 ),
               )
-            : Icon(
-                isActive ? Icons.stop_rounded : Icons.play_arrow_rounded,
-              ),
+            : Icon(isActive ? Icons.stop_rounded : Icons.play_arrow_rounded),
         label: Text(
           label,
-          style: const TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.w600,
-          ),
+          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
         ),
         style: ElevatedButton.styleFrom(
-          backgroundColor:
-              isActive ? Colors.redAccent : const Color(0xFF6200EE),
+          backgroundColor: isActive
+              ? Colors.redAccent
+              : const Color(0xFF6200EE),
           foregroundColor: Colors.white,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16),
@@ -52,4 +48,3 @@ class OverlayActionButtonWidget extends StatelessWidget {
     );
   }
 }
-

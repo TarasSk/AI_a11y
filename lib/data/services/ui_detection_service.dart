@@ -82,7 +82,9 @@ final class UiDetectionService {
     return predictFromScreenshot(screenshotBytes);
   }
 
-  Future<UiDetectionResult> predictFromScreenshot(Uint8List screenshotBytes) async {
+  Future<UiDetectionResult> predictFromScreenshot(
+    Uint8List screenshotBytes,
+  ) async {
     final interpreter = await _loadInterpreter();
     final decodedImage = img.decodeImage(screenshotBytes);
     if (decodedImage == null) {
@@ -184,8 +186,7 @@ final class UiDetectionService {
 
         if (isChannelFirst) {
           inputBuffer[pixelIndex] = pixel.r / 255.0;
-          inputBuffer[inputWidth * inputHeight + pixelIndex] =
-              pixel.g / 255.0;
+          inputBuffer[inputWidth * inputHeight + pixelIndex] = pixel.g / 255.0;
           inputBuffer[2 * inputWidth * inputHeight + pixelIndex] =
               pixel.b / 255.0;
         } else {
@@ -223,7 +224,11 @@ final class UiDetectionService {
     }
 
     final detections = <UiDetection>[];
-    for (var candidateIndex = 0; candidateIndex < candidateCount; candidateIndex++) {
+    for (
+      var candidateIndex = 0;
+      candidateIndex < candidateCount;
+      candidateIndex++
+    ) {
       final values = _readCandidateValues(
         outputBuffer: outputBuffer,
         isChannelFirstLayout: isChannelFirstLayout,
@@ -286,7 +291,11 @@ final class UiDetectionService {
     var bestClassIndex = 0;
     var bestScore = values[startIndex];
 
-    for (var valueIndex = startIndex + 1; valueIndex < values.length; valueIndex++) {
+    for (
+      var valueIndex = startIndex + 1;
+      valueIndex < values.length;
+      valueIndex++
+    ) {
       if (values[valueIndex] > bestScore) {
         bestScore = values[valueIndex];
         bestClassIndex = valueIndex - startIndex;
@@ -410,11 +419,14 @@ final class UiDetectionResult {
         return rightConfidence.compareTo(leftConfidence);
       });
 
-    return sortedEntries.map((label) {
-      final count = counts[label] ?? 0;
-      final confidence = ((topConfidence[label] ?? 0) * 100).toStringAsFixed(1);
-      return '$label x$count ($confidence%)';
-    }).join(', ');
+    return sortedEntries
+        .map((label) {
+          final count = counts[label] ?? 0;
+          final confidence = ((topConfidence[label] ?? 0) * 100)
+              .toStringAsFixed(1);
+          return '$label x$count ($confidence%)';
+        })
+        .join(', ');
   }
 
   String toLogString() {
@@ -461,12 +473,7 @@ final class UiDetection {
   final double right;
   final double bottom;
 
-  _Rect get rect => _Rect(
-    left: left,
-    top: top,
-    right: right,
-    bottom: bottom,
-  );
+  _Rect get rect => _Rect(left: left, top: top, right: right, bottom: bottom);
 
   double get width => right - left;
   double get height => bottom - top;

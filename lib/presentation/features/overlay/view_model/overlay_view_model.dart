@@ -1,10 +1,10 @@
-import 'package:ai_a11y/app/localization/l10n/app_localizations.dart';
+import 'package:ai_a11y/data/services/native_overlay_service.dart';
 import 'package:ai_a11y/domain/entity/process_screenshot_result.dart';
 import 'package:ai_a11y/domain/use_case/process_screenshot_use_case.dart';
+import 'package:ai_a11y/presentation/features/overlay/state/overlay_state.dart';
+import 'package:ai_a11y/presentation/root/localization/l10n/app_localizations.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:ai_a11y/features/overlay/state/overlay_state.dart';
-import 'package:ai_a11y/services/native_overlay_service.dart';
 
 final class OverlayViewModel extends Cubit<OverlayState> {
   OverlayViewModel({

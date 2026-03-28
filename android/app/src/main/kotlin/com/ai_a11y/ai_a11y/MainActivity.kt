@@ -13,6 +13,11 @@ class MainActivity : FlutterActivity() {
     companion object {
         private const val CHANNEL = "com.ai_a11y/overlay"
         private const val OVERLAY_PERMISSION_REQUEST = 1000
+        private var methodChannel: MethodChannel? = null
+
+        fun notifyScreenshotCaptured(screenshotPath: String) {
+            methodChannel?.invokeMethod("onScreenshotCaptured", screenshotPath)
+        }
     }
 
     private var pendingOverlayResult: MethodChannel.Result? = null
@@ -20,8 +25,8 @@ class MainActivity : FlutterActivity() {
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
 
-        MethodChannel(flutterEngine.dartExecutor.binaryMessenger, CHANNEL)
-            .setMethodCallHandler { call, result ->
+        methodChannel = MethodChannel(flutterEngine.dartExecutor.binaryMessenger, CHANNEL)
+        methodChannel?.setMethodCallHandler { call, result ->
                 when (call.method) {
                     "hasOverlayPermission" -> {
                         result.success(Settings.canDrawOverlays(this))

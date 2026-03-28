@@ -25,9 +25,11 @@ import android.util.DisplayMetrics
 import android.view.WindowManager
 import android.widget.Toast
 import androidx.core.app.NotificationCompat
+import java.io.File
+import java.io.FileOutputStream
 
-/// Short-lived foreground service that captures a single screenshot,
-/// saves it to the public Pictures gallery, and opens the system image viewer.
+/// Short-lived foreground service that captures a single screenshot
+/// and saves it to the public Pictures gallery.
 class CaptureService : Service() {
 
     companion object {
@@ -171,11 +173,18 @@ class CaptureService : Service() {
                     }
 
                     val uri = saveBitmapToMediaStore(finalBitmap)
+                    val cachePath = saveBitmapToCache(finalBitmap)
                     finalBitmap.recycle()
 
                     Handler(Looper.getMainLooper()).post {
-                        if (uri != null) openScreenshot(uri)
-                        else showToast("Screenshot saved to Pictures/AI_A11Y")
+                        if (cachePath != null) {
+                            MainActivity.notifyScreenshotCaptured(cachePath)
+                        }
+                        if (uri != null) {
+                            showToast("Screenshot saved to Pictures/AI_A11Y")
+                        } else {
+                            showToast("Failed to save screenshot.")
+                        }
                         finish()
                     }
                 } catch (e: Exception) {
@@ -227,17 +236,16 @@ class CaptureService : Service() {
         }
     }
 
-    // ─── Open screenshot ──────────────────────────────────────────
-
-    private fun openScreenshot(uri: Uri) {
-        val intent = Intent(Intent.ACTION_VIEW).apply {
-            setDataAndType(uri, "image/png")
-            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-        }
-        try {
-            startActivity(intent)
-        } catch (_: Exception) {
-            showToast("Screenshot saved to Pictures/AI_A11Y")
+    private fun saveBitmapToCache(bitmap: Bitmap): String? {
+        val file = File(cacheDir, "latest_screenshot.png")
+        return try {
+            FileOutputStream(file).use { stream ->
+                bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream)
+            }
+            file.absolutePath
+        } catch (e: Exception) {
+            e.printStackTrace()
+            null
         }
     }
 

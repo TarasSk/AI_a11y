@@ -18,6 +18,8 @@ The system combines lightweight on-device ML with LLM reasoning:
 
 ### 1. Computer Vision (TFLite / YOLO)
 - Detects UI elements such as buttons, inputs, and menus
+- Trained on the [Roboflow UI Element Detect dataset](https://universe.roboflow.com/yolo-ui/ui-element-detect-yt5su-xf6rx/dataset/1)
+- Uses a lightweight `YOLO11n` model to keep inference efficient on-device
 
 ### 2. LLM (Gemma)
 - Interprets detected elements

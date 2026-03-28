@@ -148,11 +148,29 @@ abstract class AppLocalizations {
   /// **'Overlay permission'**
   String get overlay_permission_overlay;
 
+  /// No description provided for @overlay_permission_accessibility.
+  ///
+  /// In en, this message translates to:
+  /// **'Accessibility service (silent screenshots)'**
+  String get overlay_permission_accessibility;
+
   /// No description provided for @overlay_permission_screen_capture.
   ///
   /// In en, this message translates to:
   /// **'Screen capture permission'**
   String get overlay_permission_screen_capture;
+
+  /// No description provided for @overlay_accessibility_enable_button.
+  ///
+  /// In en, this message translates to:
+  /// **'Enable Accessibility Service'**
+  String get overlay_accessibility_enable_button;
+
+  /// No description provided for @overlay_accessibility_hint.
+  ///
+  /// In en, this message translates to:
+  /// **'Required for silent screenshots — no dialog every time.\nSettings → Accessibility → AI A11Y → Enable'**
+  String get overlay_accessibility_hint;
 
   /// No description provided for @overlay_error_permission_denied.
   ///

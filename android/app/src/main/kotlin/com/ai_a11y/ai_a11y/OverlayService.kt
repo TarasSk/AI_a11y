@@ -9,8 +9,11 @@ import android.content.Intent
 import android.graphics.PixelFormat
 import android.graphics.drawable.GradientDrawable
 import android.content.pm.ServiceInfo
+import android.media.projection.MediaProjection
 import android.os.Build
+import android.os.Handler
 import android.os.IBinder
+import android.os.Looper
 import android.provider.Settings
 import android.view.Gravity
 import android.view.MotionEvent
@@ -33,6 +36,24 @@ class OverlayService : Service() {
 
         /// Static reference so CaptureService can show/hide the button.
         var instance: OverlayService? = null
+    }
+
+    // ─── MediaProjection storage ──────────────────────────────────
+
+    var mediaProjection: MediaProjection? = null
+        private set
+
+    private val projectionCallback = object : MediaProjection.Callback() {
+        override fun onStop() {
+            mediaProjection = null
+        }
+    }
+
+    /** Store a fresh MediaProjection and register the required callback. */
+    fun setMediaProjection(projection: MediaProjection) {
+        mediaProjection?.unregisterCallback(projectionCallback)
+        mediaProjection = projection
+        projection.registerCallback(projectionCallback, Handler(Looper.getMainLooper()))
     }
 
     override fun onBind(intent: Intent?): IBinder? = null
@@ -176,10 +197,23 @@ class OverlayService : Service() {
 
     private fun onScreenshotButtonTapped() {
         hideOverlayButton()
-        val intent = Intent(this, ScreenshotActivity::class.java).apply {
-            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-        }
-        startActivity(intent)
+
+        // Wait for the window manager to commit the visibility change before capturing,
+        // otherwise the floating button may still appear in the screenshot.
+        Handler(Looper.getMainLooper()).postDelayed({
+            if (ScreenCaptureAccessibilityService.isAvailable && Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                // Silent capture — no dialog at all.
+                ScreenCaptureAccessibilityService.instance?.captureScreen {
+                    showOverlayButton()
+                }
+            } else {
+                // Fallback: MediaProjection (shows consent dialog once, then reuses token).
+                val intent = Intent(this, ScreenshotActivity::class.java).apply {
+                    addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                }
+                startActivity(intent)
+            }
+        }, 300)
     }
 
     fun showOverlayButton() {
@@ -195,6 +229,8 @@ class OverlayService : Service() {
     override fun onDestroy() {
         super.onDestroy()
         instance = null
+        mediaProjection?.stop()
+        mediaProjection = null
         overlayView?.let {
             try { windowManager?.removeView(it) } catch (_: Exception) {}
         }

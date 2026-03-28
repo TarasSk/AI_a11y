@@ -14,7 +14,7 @@ Instead of depending on developer-provided accessibility semantics (which are of
 
 ## 🎬 Preview
 
-![Initial setup preview](preview/initial_setup.gif)
+![Initial setup preview](preview/initial_setup_example.gif)
 
 - How it works examples:
   [Calculator example](preview/calculator_example.mp4)

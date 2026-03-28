@@ -14,7 +14,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$OverlayState {
 
- bool get hasOverlayPermission; bool get isOverlayActive; bool get isLoading; String? get lastScreenshotPath; String? get error;
+ bool get hasOverlayPermission; bool get hasAccessibilityPermission; bool get isOverlayActive; bool get isLoading; String? get lastScreenshotPath; String? get error;
 /// Create a copy of OverlayState
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -25,16 +25,16 @@ $OverlayStateCopyWith<OverlayState> get copyWith => _$OverlayStateCopyWithImpl<O
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is OverlayState&&(identical(other.hasOverlayPermission, hasOverlayPermission) || other.hasOverlayPermission == hasOverlayPermission)&&(identical(other.isOverlayActive, isOverlayActive) || other.isOverlayActive == isOverlayActive)&&(identical(other.isLoading, isLoading) || other.isLoading == isLoading)&&(identical(other.lastScreenshotPath, lastScreenshotPath) || other.lastScreenshotPath == lastScreenshotPath)&&(identical(other.error, error) || other.error == error));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is OverlayState&&(identical(other.hasOverlayPermission, hasOverlayPermission) || other.hasOverlayPermission == hasOverlayPermission)&&(identical(other.hasAccessibilityPermission, hasAccessibilityPermission) || other.hasAccessibilityPermission == hasAccessibilityPermission)&&(identical(other.isOverlayActive, isOverlayActive) || other.isOverlayActive == isOverlayActive)&&(identical(other.isLoading, isLoading) || other.isLoading == isLoading)&&(identical(other.lastScreenshotPath, lastScreenshotPath) || other.lastScreenshotPath == lastScreenshotPath)&&(identical(other.error, error) || other.error == error));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,hasOverlayPermission,isOverlayActive,isLoading,lastScreenshotPath,error);
+int get hashCode => Object.hash(runtimeType,hasOverlayPermission,hasAccessibilityPermission,isOverlayActive,isLoading,lastScreenshotPath,error);
 
 @override
 String toString() {
-  return 'OverlayState(hasOverlayPermission: $hasOverlayPermission, isOverlayActive: $isOverlayActive, isLoading: $isLoading, lastScreenshotPath: $lastScreenshotPath, error: $error)';
+  return 'OverlayState(hasOverlayPermission: $hasOverlayPermission, hasAccessibilityPermission: $hasAccessibilityPermission, isOverlayActive: $isOverlayActive, isLoading: $isLoading, lastScreenshotPath: $lastScreenshotPath, error: $error)';
 }
 
 
@@ -45,7 +45,7 @@ abstract mixin class $OverlayStateCopyWith<$Res>  {
   factory $OverlayStateCopyWith(OverlayState value, $Res Function(OverlayState) _then) = _$OverlayStateCopyWithImpl;
 @useResult
 $Res call({
- bool hasOverlayPermission, bool isOverlayActive, bool isLoading, String? lastScreenshotPath, String? error
+ bool hasOverlayPermission, bool hasAccessibilityPermission, bool isOverlayActive, bool isLoading, String? lastScreenshotPath, String? error
 });
 
 
@@ -62,9 +62,10 @@ class _$OverlayStateCopyWithImpl<$Res>
 
 /// Create a copy of OverlayState
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? hasOverlayPermission = null,Object? isOverlayActive = null,Object? isLoading = null,Object? lastScreenshotPath = freezed,Object? error = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? hasOverlayPermission = null,Object? hasAccessibilityPermission = null,Object? isOverlayActive = null,Object? isLoading = null,Object? lastScreenshotPath = freezed,Object? error = freezed,}) {
   return _then(_self.copyWith(
 hasOverlayPermission: null == hasOverlayPermission ? _self.hasOverlayPermission : hasOverlayPermission // ignore: cast_nullable_to_non_nullable
+as bool,hasAccessibilityPermission: null == hasAccessibilityPermission ? _self.hasAccessibilityPermission : hasAccessibilityPermission // ignore: cast_nullable_to_non_nullable
 as bool,isOverlayActive: null == isOverlayActive ? _self.isOverlayActive : isOverlayActive // ignore: cast_nullable_to_non_nullable
 as bool,isLoading: null == isLoading ? _self.isLoading : isLoading // ignore: cast_nullable_to_non_nullable
 as bool,lastScreenshotPath: freezed == lastScreenshotPath ? _self.lastScreenshotPath : lastScreenshotPath // ignore: cast_nullable_to_non_nullable
@@ -151,10 +152,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( bool hasOverlayPermission,  bool isOverlayActive,  bool isLoading,  String? lastScreenshotPath,  String? error)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( bool hasOverlayPermission,  bool hasAccessibilityPermission,  bool isOverlayActive,  bool isLoading,  String? lastScreenshotPath,  String? error)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _OverlayState() when $default != null:
-return $default(_that.hasOverlayPermission,_that.isOverlayActive,_that.isLoading,_that.lastScreenshotPath,_that.error);case _:
+return $default(_that.hasOverlayPermission,_that.hasAccessibilityPermission,_that.isOverlayActive,_that.isLoading,_that.lastScreenshotPath,_that.error);case _:
   return orElse();
 
 }
@@ -172,10 +173,10 @@ return $default(_that.hasOverlayPermission,_that.isOverlayActive,_that.isLoading
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( bool hasOverlayPermission,  bool isOverlayActive,  bool isLoading,  String? lastScreenshotPath,  String? error)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( bool hasOverlayPermission,  bool hasAccessibilityPermission,  bool isOverlayActive,  bool isLoading,  String? lastScreenshotPath,  String? error)  $default,) {final _that = this;
 switch (_that) {
 case _OverlayState():
-return $default(_that.hasOverlayPermission,_that.isOverlayActive,_that.isLoading,_that.lastScreenshotPath,_that.error);}
+return $default(_that.hasOverlayPermission,_that.hasAccessibilityPermission,_that.isOverlayActive,_that.isLoading,_that.lastScreenshotPath,_that.error);}
 }
 /// A variant of `when` that fallback to returning `null`
 ///
@@ -189,10 +190,10 @@ return $default(_that.hasOverlayPermission,_that.isOverlayActive,_that.isLoading
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( bool hasOverlayPermission,  bool isOverlayActive,  bool isLoading,  String? lastScreenshotPath,  String? error)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( bool hasOverlayPermission,  bool hasAccessibilityPermission,  bool isOverlayActive,  bool isLoading,  String? lastScreenshotPath,  String? error)?  $default,) {final _that = this;
 switch (_that) {
 case _OverlayState() when $default != null:
-return $default(_that.hasOverlayPermission,_that.isOverlayActive,_that.isLoading,_that.lastScreenshotPath,_that.error);case _:
+return $default(_that.hasOverlayPermission,_that.hasAccessibilityPermission,_that.isOverlayActive,_that.isLoading,_that.lastScreenshotPath,_that.error);case _:
   return null;
 
 }
@@ -204,10 +205,11 @@ return $default(_that.hasOverlayPermission,_that.isOverlayActive,_that.isLoading
 
 
 class _OverlayState implements OverlayState {
-  const _OverlayState({this.hasOverlayPermission = false, this.isOverlayActive = false, this.isLoading = false, this.lastScreenshotPath, this.error});
+  const _OverlayState({this.hasOverlayPermission = false, this.hasAccessibilityPermission = false, this.isOverlayActive = false, this.isLoading = false, this.lastScreenshotPath, this.error});
   
 
 @override@JsonKey() final  bool hasOverlayPermission;
+@override@JsonKey() final  bool hasAccessibilityPermission;
 @override@JsonKey() final  bool isOverlayActive;
 @override@JsonKey() final  bool isLoading;
 @override final  String? lastScreenshotPath;
@@ -223,16 +225,16 @@ _$OverlayStateCopyWith<_OverlayState> get copyWith => __$OverlayStateCopyWithImp
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _OverlayState&&(identical(other.hasOverlayPermission, hasOverlayPermission) || other.hasOverlayPermission == hasOverlayPermission)&&(identical(other.isOverlayActive, isOverlayActive) || other.isOverlayActive == isOverlayActive)&&(identical(other.isLoading, isLoading) || other.isLoading == isLoading)&&(identical(other.lastScreenshotPath, lastScreenshotPath) || other.lastScreenshotPath == lastScreenshotPath)&&(identical(other.error, error) || other.error == error));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _OverlayState&&(identical(other.hasOverlayPermission, hasOverlayPermission) || other.hasOverlayPermission == hasOverlayPermission)&&(identical(other.hasAccessibilityPermission, hasAccessibilityPermission) || other.hasAccessibilityPermission == hasAccessibilityPermission)&&(identical(other.isOverlayActive, isOverlayActive) || other.isOverlayActive == isOverlayActive)&&(identical(other.isLoading, isLoading) || other.isLoading == isLoading)&&(identical(other.lastScreenshotPath, lastScreenshotPath) || other.lastScreenshotPath == lastScreenshotPath)&&(identical(other.error, error) || other.error == error));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,hasOverlayPermission,isOverlayActive,isLoading,lastScreenshotPath,error);
+int get hashCode => Object.hash(runtimeType,hasOverlayPermission,hasAccessibilityPermission,isOverlayActive,isLoading,lastScreenshotPath,error);
 
 @override
 String toString() {
-  return 'OverlayState(hasOverlayPermission: $hasOverlayPermission, isOverlayActive: $isOverlayActive, isLoading: $isLoading, lastScreenshotPath: $lastScreenshotPath, error: $error)';
+  return 'OverlayState(hasOverlayPermission: $hasOverlayPermission, hasAccessibilityPermission: $hasAccessibilityPermission, isOverlayActive: $isOverlayActive, isLoading: $isLoading, lastScreenshotPath: $lastScreenshotPath, error: $error)';
 }
 
 
@@ -243,7 +245,7 @@ abstract mixin class _$OverlayStateCopyWith<$Res> implements $OverlayStateCopyWi
   factory _$OverlayStateCopyWith(_OverlayState value, $Res Function(_OverlayState) _then) = __$OverlayStateCopyWithImpl;
 @override @useResult
 $Res call({
- bool hasOverlayPermission, bool isOverlayActive, bool isLoading, String? lastScreenshotPath, String? error
+ bool hasOverlayPermission, bool hasAccessibilityPermission, bool isOverlayActive, bool isLoading, String? lastScreenshotPath, String? error
 });
 
 
@@ -260,9 +262,10 @@ class __$OverlayStateCopyWithImpl<$Res>
 
 /// Create a copy of OverlayState
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? hasOverlayPermission = null,Object? isOverlayActive = null,Object? isLoading = null,Object? lastScreenshotPath = freezed,Object? error = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? hasOverlayPermission = null,Object? hasAccessibilityPermission = null,Object? isOverlayActive = null,Object? isLoading = null,Object? lastScreenshotPath = freezed,Object? error = freezed,}) {
   return _then(_OverlayState(
 hasOverlayPermission: null == hasOverlayPermission ? _self.hasOverlayPermission : hasOverlayPermission // ignore: cast_nullable_to_non_nullable
+as bool,hasAccessibilityPermission: null == hasAccessibilityPermission ? _self.hasAccessibilityPermission : hasAccessibilityPermission // ignore: cast_nullable_to_non_nullable
 as bool,isOverlayActive: null == isOverlayActive ? _self.isOverlayActive : isOverlayActive // ignore: cast_nullable_to_non_nullable
 as bool,isLoading: null == isLoading ? _self.isLoading : isLoading // ignore: cast_nullable_to_non_nullable
 as bool,lastScreenshotPath: freezed == lastScreenshotPath ? _self.lastScreenshotPath : lastScreenshotPath // ignore: cast_nullable_to_non_nullable

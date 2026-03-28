@@ -1,5 +1,6 @@
 package com.ai_a11y.ai_a11y
 
+import android.content.ComponentName
 import android.content.Intent
 import android.net.Uri
 import android.provider.Settings
@@ -51,10 +52,35 @@ class MainActivity : FlutterActivity() {
                         result.success(true)
                     }
 
+                    "hasAccessibilityPermission" -> {
+                        result.success(isAccessibilityServiceEnabled())
+                    }
+
+                    "requestAccessibilityPermission" -> {
+                        val intent = Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS).apply {
+                            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                        }
+                        startActivity(intent)
+                        result.success(false)
+                    }
+
                     else -> result.notImplemented()
                 }
             }
     }
+
+    // ─── Helpers ──────────────────────────────────────────────────
+
+    private fun isAccessibilityServiceEnabled(): Boolean {
+        val flat = Settings.Secure.getString(
+            contentResolver,
+            Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES
+        ) ?: return false
+        val component = ComponentName(this, ScreenCaptureAccessibilityService::class.java)
+        return flat.split(':').any { it.equals(component.flattenToString(), ignoreCase = true) }
+    }
+
+    // ─── Activity result ──────────────────────────────────────────
 
     @Suppress("DEPRECATION")
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {

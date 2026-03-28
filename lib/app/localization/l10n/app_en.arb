@@ -12,7 +12,11 @@
   "overlay_button_loading": "Please wait...",
 
   "overlay_permission_overlay": "Overlay permission",
+  "overlay_permission_accessibility": "Accessibility service (silent screenshots)",
   "overlay_permission_screen_capture": "Screen capture permission",
+
+  "overlay_accessibility_enable_button": "Enable Accessibility Service",
+  "overlay_accessibility_hint": "Required for silent screenshots — no dialog every time.\nSettings → Accessibility → AI A11Y → Enable",
 
   "overlay_error_permission_denied": "Overlay permission denied. Please allow drawing over other apps.",
   "overlay_error_screen_capture_denied": "Screen capture permission denied."

@@ -74,8 +74,40 @@ final class OverlayPage extends StatelessWidget {
                           label: locale.overlay_permission_overlay,
                           granted: state.hasOverlayPermission,
                         ),
+                        (
+                          label: locale.overlay_permission_accessibility,
+                          granted: state.hasAccessibilityPermission,
+                        ),
                       ],
                     ),
+                    if (!state.hasAccessibilityPermission) ...[
+                      const SizedBox(height: 16),
+                      SizedBox(
+                        width: double.infinity,
+                        child: OutlinedButton.icon(
+                          onPressed: viewModel.requestAccessibilityPermission,
+                          icon: const Icon(Icons.accessibility_new_rounded),
+                          label: Text(locale.overlay_accessibility_enable_button),
+                          style: OutlinedButton.styleFrom(
+                            foregroundColor: Colors.white70,
+                            side: const BorderSide(color: Colors.white24),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            padding: const EdgeInsets.symmetric(vertical: 14),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        locale.overlay_accessibility_hint,
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(
+                          color: Colors.white38,
+                          fontSize: 12,
+                        ),
+                      ),
+                    ],
                   ],
                 ),
               ),

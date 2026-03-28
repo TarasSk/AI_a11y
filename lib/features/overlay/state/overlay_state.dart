@@ -6,6 +6,7 @@ part 'overlay_state.freezed.dart';
 sealed class OverlayState with _$OverlayState {
   const factory OverlayState({
     @Default(false) bool hasOverlayPermission,
+    @Default(false) bool hasAccessibilityPermission,
     @Default(false) bool isOverlayActive,
     @Default(false) bool isLoading,
     String? lastScreenshotPath,

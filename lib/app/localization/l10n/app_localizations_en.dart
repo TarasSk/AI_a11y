@@ -38,7 +38,19 @@ class AppLocalizationsEn extends AppLocalizations {
   String get overlay_permission_overlay => 'Overlay permission';
 
   @override
+  String get overlay_permission_accessibility =>
+      'Accessibility service (silent screenshots)';
+
+  @override
   String get overlay_permission_screen_capture => 'Screen capture permission';
+
+  @override
+  String get overlay_accessibility_enable_button =>
+      'Enable Accessibility Service';
+
+  @override
+  String get overlay_accessibility_hint =>
+      'Required for silent screenshots — no dialog every time.\nSettings → Accessibility → AI A11Y → Enable';
 
   @override
   String get overlay_error_permission_denied =>

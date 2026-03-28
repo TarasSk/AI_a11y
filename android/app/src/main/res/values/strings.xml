@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="common_app_name">AI A11Y</string>
+    <string name="accessibility_service_description">Allows AI A11Y to take silent screenshots when you tap the floating button, without showing any confirmation dialog.</string>
+    <string name="accessibility_service_summary">Silent screenshots via floating button</string>
+</resources>
+

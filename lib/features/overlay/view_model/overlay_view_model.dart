@@ -15,6 +15,8 @@ final class OverlayViewModel extends Cubit<OverlayState> {
   final NativeOverlayService _overlayService;
   final AppLocalizations _localization;
 
+  // ── Toggle overlay ─────────────────────────────────────────────
+
   /// Toggles the overlay on/off.
   Future<void> toggleOverlay() async {
     if (state.isOverlayActive) {
@@ -69,15 +71,26 @@ final class OverlayViewModel extends Cubit<OverlayState> {
     }
   }
 
-  /// Checks current permission status without requesting.
+  // ── Permissions ────────────────────────────────────────────────
+
+  /// Checks both overlay and accessibility permission status.
   Future<void> checkPermissions() async {
     if (isClosed) return;
-
     try {
       final hasOverlay = await _overlayService.hasOverlayPermission();
+      final hasAccessibility = await _overlayService.hasAccessibilityPermission();
       if (isClosed) return;
-
-      emit(state.copyWith(hasOverlayPermission: hasOverlay));
+      emit(state.copyWith(
+        hasOverlayPermission: hasOverlay,
+        hasAccessibilityPermission: hasAccessibility,
+      ));
     } catch (_) {}
+  }
+
+  /// Opens the system Accessibility Settings page so the user can enable our service.
+  Future<void> requestAccessibilityPermission() async {
+    await _overlayService.requestAccessibilityPermission();
+    // Re-check after returning from settings.
+    await checkPermissions();
   }
 }
